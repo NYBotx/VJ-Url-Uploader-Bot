@@ -2,7 +2,6 @@
 # Subscribe YouTube Channel For Amazing Bot https://youtube.com/@Tech_VJ
 # Ask Doubt on telegram @KingVJ01
 
-# the logging things
 import logging
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -15,23 +14,19 @@ import os
 import shutil
 import time
 from datetime import datetime
-# the secret configuration specific things
 from config import Config
-# the Strings used for this "thing"
 from translation import Translation
 from plugins.custom_thumbnail import *
 logging.getLogger("pyrogram").setLevel(logging.WARNING)
 from helper_funcs.display_progress import progress_for_pyrogram, humanbytes, TimeFormatter
 from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
-# https://stackoverflow.com/a/37631799/4723940
 from PIL import Image
 
 
 async def ddl_call_back(bot, update):
     logger.info(update)
     cb_data = update.data
-    # youtube_dl extractors
     tg_send_type, youtube_dl_format, youtube_dl_ext = cb_data.split("=")
     thumb_image_path = Config.TECH_VJ_DOWNLOAD_LOCATION + \
         "/" + str(update.from_user.id) + ".jpg"
@@ -54,7 +49,6 @@ async def ddl_call_back(bot, update):
             youtube_dl_url = youtube_dl_url.strip()
         if custom_file_name is not None:
             custom_file_name = custom_file_name.strip()
-        # https://stackoverflow.com/a/761825/4723940
         logger.info(youtube_dl_url)
         logger.info(custom_file_name)
     else:
@@ -110,7 +104,6 @@ async def ddl_call_back(bot, update):
             file_size = os.stat(download_directory).st_size
         except FileNotFoundError as exc:
             download_directory = os.path.splitext(download_directory)[0] + "." + "mkv"
-            # https://stackoverflow.com/a/678242/4723940
             file_size = os.stat(download_directory).st_size
         if file_size > Config.TECH_VJ_TG_MAX_FILE_SIZE:
             await bot.edit_message_text(
@@ -119,9 +112,7 @@ async def ddl_call_back(bot, update):
                 message_id=update.message.id
             )
         else:
-            # ref: message from @VJ_BOTZ
             start_time = time.time()
-            # try to upload file
             if tg_send_type == "audio":
                 duration = await Mdata03(download_directory)
                 thumb_image_path = await Gthumb01(bot, update)
@@ -219,18 +210,33 @@ async def ddl_call_back(bot, update):
 async def download_coroutine(bot, session, url, file_name, chat_id, message_id, start):
     downloaded = 0
     display_message = ""
+    progress_animation = [
+        "⬛⬜⬜⬜⬜⬜⬜⬜⬜⬜", 
+        "⬛⬛⬜⬜⬜⬜⬜⬜⬜⬜", 
+        "⬛⬛⬛⬜⬜⬜⬜⬜⬜⬜", 
+        "⬛⬛⬛⬛⬜⬜⬜⬜⬜⬜",
+        "⬛⬛⬛⬛⬛⬜⬜⬜⬜⬜", 
+        "⬛⬛⬛⬛⬛⬛⬜⬜⬜⬜",
+        "⬛⬛⬛⬛⬛⬛⬛⬜⬜⬜", 
+        "⬛⬛⬛⬛⬛⬛⬛⬛⬜⬜", 
+        "⬛⬛⬛⬛⬛⬛⬛⬛⬛⬜", 
+        "⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛"
+    ]
+    
     async with session.get(url, timeout=Config.TECH_VJ_PROCESS_MAX_TIMEOUT) as response:
         total_length = int(response.headers["Content-Length"])
         content_type = response.headers["Content-Type"]
         if "text" in content_type and total_length < 500:
             return await response.release()
+        
         await bot.edit_message_text(
             chat_id,
             message_id,
-            text="""Initiating Download
-URL: {}
-File Size: {}""".format(url, humanbytes(total_length))
+            text=f"""🚀 Initiating Download
+🔗 URL: {url}
+📦 File Size: {humanbytes(total_length)}"""
         )
+        
         with open(file_name, "wb") as f_handle:
             while True:
                 chunk = await response.content.read(Config.TECH_VJ_CHUNK_SIZE)
@@ -240,6 +246,7 @@ File Size: {}""".format(url, humanbytes(total_length))
                 downloaded += Config.TECH_VJ_CHUNK_SIZE
                 now = time.time()
                 diff = now - start
+                
                 if round(diff % 5.00) == 0 or downloaded == total_length:
                     percentage = downloaded * 100 / total_length
                     speed = downloaded / diff
@@ -247,17 +254,19 @@ File Size: {}""".format(url, humanbytes(total_length))
                     time_to_completion = round(
                         (total_length - downloaded) / speed) * 1000
                     estimated_total_time = elapsed_time + time_to_completion
+                    
+                    progress_index = min(int(percentage/10), 9)
+                    progress_bar = progress_animation[progress_index]
+                    
                     try:
-                        current_message = """**Download Status**
-URL: {}
-File Size: {}
-Downloaded: {}
-ETA: {}""".format(
-    url,
-    humanbytes(total_length),
-    humanbytes(downloaded),
-    TimeFormatter(estimated_total_time)
-)
+                        current_message = f"""📥 Download Status
+🔗 URL: {url}
+📊 Progress: {progress_bar} {round(percentage, 2)}%
+📦 Size: {humanbytes(total_length)}
+⬇️ Downloaded: {humanbytes(downloaded)}
+⚡ Speed: {humanbytes(speed)}/s
+⏳ ETA: {TimeFormatter(estimated_total_time)}"""
+                        
                         if current_message != display_message:
                             await bot.edit_message_text(
                                 chat_id,
