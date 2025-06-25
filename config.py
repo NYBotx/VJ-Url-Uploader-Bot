@@ -18,12 +18,12 @@ def is_enabled(value, default):
 
 class Config(object):
     # Bot Information 
-    TECH_VJ_BOT_TOKEN = "8120897740:AAHBzDf484aQZwOlz4Sp5s7rwfHAMyU0JNM"
-    TECH_VJ_BOT_USERNAME = "Url_uploader_nybot"  # Bot username without @.
+    TECH_VJ_BOT_TOKEN = "8021806435:AAEHRMNJkB3Vm7uIa_2XLcY5ESIMDm17zWU"
+    TECH_VJ_BOT_USERNAME = "Url_Uploader_NY_Bot"  # Bot username without @.
 
     # The Telegram API things
-    TECH_VJ_API_ID = 13963336
-    TECH_VJ_API_HASH = "a144d1e22ef0b29738e8c00713d02678"
+    TECH_VJ_API_ID = 24720215
+    TECH_VJ_API_HASH = "c0d3395590fecba19985f95d6300785e"
 
     # The download location, where the HTTP Server runs
     TECH_VJ_DOWNLOAD_LOCATION = "./DOWNLOADS"
@@ -46,8 +46,8 @@ class Config(object):
     TECH_VJ_PROCESS_MAX_TIMEOUT = 0
 
     # Your telegram account ID
-    TECH_VJ_OWNER_ID = 2103299862
-    TECH_VJ_SESSION_NAME = "Url_uploader_nybot"
+    TECH_VJ_OWNER_ID = 7910994767
+    TECH_VJ_SESSION_NAME = "Url_Uploader_NY_Bot"
 
     # Database URI (mongodb)
     TECH_VJ_DATABASE_URL = "mongodb+srv://Nischay999:Nischay999@cluster0.5kufo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
@@ -55,7 +55,7 @@ class Config(object):
     TECH_VJ_MAX_RESULTS = "50"
 
     # Channel Information
-    TECH_VJ_LOG_CHANNEL = -1002421238378  # Your log channel ID and make bot admin in log channel with full rights
+    TECH_VJ_LOG_CHANNEL = -1002732334186  # Your log channel ID and make bot admin in log channel with full rights
 
     # If you want force subscribe then give your channel ID below else leave blank
     TECH_VJ_UPDATE_CHANNEL = -1002465691872  # Your update channel ID and make bot admin in update channel with full rights
